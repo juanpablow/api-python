@@ -1,0 +1,15 @@
+target-version = "py310"
+
+line-length = 79
+
+[lint]
+extend-select = [
+  "UP",  # pyupgrade   # pydocstyle
+]
+
+[lint.pydocstyle]
+convention = "google"
+
+[format]
+quote-style = "double"
+indent-style = "tab"
