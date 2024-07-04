@@ -1,9 +1,14 @@
 import os
+import logging
 from dotenv import load_dotenv
-import psycopg2
+from sqlalchemy import create_engine, text
 
 
-def query(queryObj):
+logging.basicConfig()
+logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+
+
+def get_db_engine():
 	load_dotenv(dotenv_path=".env.development")
 
 	host = os.getenv("POSTGRES_HOST")
@@ -12,19 +17,27 @@ def query(queryObj):
 	passwd = os.getenv("POSTGRES_PASSWORD")
 	port = os.getenv("POSTGRES_PORT")
 
+	db_url = f"postgresql://{user}:{passwd}@{host}:{port}/{db_name}"
+
+	engine = create_engine(
+		db_url, echo=True
+	)  # echo=True para ver as queries SQL geradas
+
+	return engine
+
+
+def execute_query(query):
+	engine = get_db_engine()
 	try:
-		client = psycopg2.connect(
-			dbname=db_name, user=user, host=host, password=passwd, port=port
-		)
+		with engine.connect() as connection:
+			result = connection.execute(text(query))
+			return result.fetchone()[0]
 
-		cursor = client.cursor()
-		cursor.execute(queryObj)
+	except Exception as e:
+		print(f"Erro ao executar a consulta SQL: {e}")
+		return None
 
-		query = cursor.fetchone()[0]
 
-		return query
-
-	except (Exception, psycopg2.Error) as error:
-		print(f"Error while connecting to PostgreSQL: {error}")
-	finally:
-		client.close()
+if __name__ == "__main__":
+	query = "SELECT 1 + 1;"
+	print(execute_query(query))
