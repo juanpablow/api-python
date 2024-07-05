@@ -8,8 +8,8 @@ logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
 
-def get_db_engine():
-	load_dotenv(dotenv_path=".env.development")
+def get_url_database() -> str:
+	load_dotenv(dotenv_path="../.env.development")
 
 	host = os.getenv("POSTGRES_HOST")
 	user = os.getenv("POSTGRES_USER")
@@ -17,24 +17,18 @@ def get_db_engine():
 	passwd = os.getenv("POSTGRES_PASSWORD")
 	port = os.getenv("POSTGRES_PORT")
 
-	db_url = f"postgresql://{user}:{passwd}@{host}:{port}/{db_name}"
-
-	engine = create_engine(
-		db_url, echo=True
-	)  # echo=True para ver as queries SQL geradas
-
-	return engine
+	return f"postgresql://{user}:{passwd}@{host}:{port}/{db_name}"
 
 
 def execute_query(query):
-	engine = get_db_engine()
+	engine = create_engine(get_url_database(), echo=True)
 	try:
 		with engine.connect() as connection:
 			result = connection.execute(text(query))
 			return result.fetchone()[0]
 
 	except Exception as e:
-		print(f"Erro ao executar a consulta SQL: {e}")
+		print(f"Error executing SQL query: {e}")
 		return None
 
 
