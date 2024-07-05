@@ -2,6 +2,8 @@ target-version = "py310"
 
 line-length = 79
 
+exclude = ["infra/migrations/*"]
+
 [lint]
 extend-select = [
   "UP",  # pyupgrade   # pydocstyle
