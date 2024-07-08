@@ -15,7 +15,7 @@ def custom_openapi():
 	openapi_schema = get_openapi(
 		title="TaskAPI",
 		version="1.0.0",
-		description="Project to add tasks",
+		description="Crud API to integrate with a routing app",
 		routes=app.routes,
 	)
 	app.openapi_schema = openapi_schema
